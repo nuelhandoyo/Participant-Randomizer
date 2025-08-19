@@ -1,202 +1,164 @@
 # Aplikasi Pengacakan Giliran Peserta
 
-Aplikasi web real-time untuk mengacak giliran peserta dengan animasi bergaya Matrix dan sinkronisasi antar perangkat.
+Aplikasi JavaScript untuk pengacakan giliran peserta dengan animasi bergaya Matrix dan sinkronisasi real-time.
 
 ## 🚀 Fitur Utama
 
 ### Tampilan Narasumber (Admin)
-- **Upload File CSV**: Import daftar peserta dari file CSV
-- **Input Manual**: Masukkan nama peserta secara manual (satu per baris)
-- **Pengacakan Real-time**: Animasi Matrix-style dengan efek visual menarik
-- **Download Data**: Ekspor hasil pengacakan dalam format CSV
-- **Reset Data**: Hapus semua data dan mulai dari awal
+- **Upload CSV**: Drag & drop atau klik untuk upload file CSV berisi daftar nama
+- **Input Manual**: Text area untuk memasukkan nama peserta (satu nama per baris)
+- **Animasi Matrix**: Pengacakan nama dengan efek visual yang menarik
+- **Export Data**: Download data lengkap dalam format CSV
+- **Real-time Control**: Kontrol pengacakan dengan sinkronisasi langsung
 
 ### Tampilan Peserta (Viewer)
 - **Animasi Sinkron**: Melihat pengacakan secara real-time
-- **Status Peserta**: Daftar peserta yang sudah dan belum terpilih
+- **Status Panels**: Panel "Sudah Terpilih" dan "Belum Terpilih"
 - **Timestamp**: Waktu terpilih untuk setiap peserta
-
-### Fitur Teknis
-- **Real-time Sync**: Menggunakan Socket.io untuk sinkronisasi
-- **Responsive Design**: Optimized untuk desktop, tablet, dan mobile
-- **Matrix Animation**: Efek visual bergaya Matrix dengan CSS animations
-- **Data Persistence**: Data tersimpan selama sesi berlangsung
-- **Error Handling**: Validasi input dan penanganan error
+- **Responsive**: Tampilan optimal di berbagai ukuran layar
 
 ## 📋 Persyaratan Sistem
 
 - Node.js (versi 14 atau lebih baru)
-- Browser modern (Chrome, Firefox, Safari, Edge)
-- Koneksi internet untuk sinkronisasi real-time
+- Browser modern dengan dukungan WebSocket
+- Port 3000 (dapat dikonfigurasi)
 
-## 🛠️ Instalasi
+## 🛠️ Instalasi dan Menjalankan
 
-1. **Clone atau download** project ini
-2. **Install dependencies**:
+1. **Install Dependencies**
    ```bash
    npm install
    ```
-3. **Jalankan server**:
+
+2. **Jalankan Server**
    ```bash
    npm start
    ```
-4. **Buka browser** dan akses:
-   - Tampilan Narasumber: `http://localhost:3000`
-   - Tampilan Peserta: `http://localhost:3000/participant`
 
-## 📖 Cara Penggunaan
-
-### Untuk Narasumber (Admin)
-
-1. **Persiapan Data Peserta**:
-   - **Opsi 1**: Upload file CSV dengan format:
-     ```csv
-     Nama
-     Ahmad Wijaya
-     Siti Nurhaliza
-     Budi Santoso
-     ```
-   - **Opsi 2**: Ketik manual di text area (satu nama per baris)
-
-2. **Load Data**:
-   - Klik tombol "📋 Muat Daftar Peserta"
-   - Sistem akan memvalidasi dan memuat data peserta
-
-3. **Mulai Pengacakan**:
-   - Klik tombol "🎯 Mulai Pengacakan"
-   - Nikmati animasi Matrix-style selama 3 detik
-   - Nama terpilih akan ditampilkan dengan efek khusus
-
-4. **Download Hasil**:
-   - Klik "💾 Download Data CSV" untuk mendapatkan file hasil
-   - File berisi status semua peserta dan timestamp terpilih
-
-5. **Reset Data**:
-   - Gunakan "🔄 Reset Semua" untuk memulai sesi baru
-
-### Untuk Peserta (Viewer)
-
-1. **Akses Tampilan Peserta**:
-   - Buka `http://localhost:3000/participant`
-   - Atau klik link "Tampilan Peserta" di halaman admin
-
-2. **Monitoring Real-time**:
-   - Lihat animasi pengacakan secara langsung
-   - Monitor daftar peserta yang sudah/belum terpilih
-   - Lihat timestamp setiap peserta terpilih
+3. **Akses Aplikasi**
+   - Panel Narasumber: http://localhost:3000
+   - Tampilan Peserta: http://localhost:3000/participant.html
 
 ## 📁 Struktur File
 
 ```
-project/
-├── server.js           # Server Node.js dengan Socket.io
-├── package.json        # Dependencies dan scripts
-├── index.html          # Tampilan Narasumber (Admin)
-├── participant.html    # Tampilan Peserta (Viewer)
-├── app.js             # Logika client-side JavaScript
-├── style.css          # Styling dengan tema Matrix
-└── README.md          # Dokumentasi ini
+participant-randomizer/
+├── server.js              # Server Node.js dengan WebSocket
+├── index.html             # Tampilan narasumber (admin)
+├── participant.html       # Tampilan peserta (viewer)
+├── presenter.js           # Logic client-side narasumber
+├── participant.js         # Logic client-side peserta
+├── style.css             # Styling dengan efek Matrix
+├── package.json          # Konfigurasi npm
+└── README.md             # Dokumentasi
 ```
 
-## 🎨 Desain dan Tema
+## 🎯 Cara Penggunaan
 
-- **Tema Matrix**: Warna hijau neon pada background gelap
-- **Animasi Smooth**: CSS animations untuk transisi halus
-- **Typography**: Font Orbitron untuk header, Inter untuk body text
-- **Responsive**: Grid layout yang menyesuaikan layar
-- **Visual Effects**: Glow effects, shadows, dan micro-interactions
+### Untuk Narasumber:
+
+1. **Tambah Peserta**
+   - Upload file CSV dengan daftar nama, atau
+   - Ketik manual di text area (satu nama per baris)
+   - Klik "Tambah Peserta"
+
+2. **Mulai Pengacakan**
+   - Klik tombol "Mulai Pengacakan"
+   - Nikmati animasi Matrix selama 3 detik
+   - Lihat hasil pengacakan
+
+3. **Export Data**
+   - Klik "Export Data" untuk download CSV
+   - File berisi nama, status, dan timestamp
+
+4. **Reset Data**
+   - Klik "Reset" untuk mengulang dari awal
+   - Konfirmasi untuk menghapus semua data
+
+### Untuk Peserta:
+
+1. **Buka Link Tampilan Peserta**
+   - Akses melalui tombol "Tampilan Peserta" atau langsung ke `/participant.html`
+
+2. **Monitor Status**
+   - Lihat status koneksi di kanan atas
+   - Panel kiri menampilkan yang sudah terpilih
+   - Panel kanan menampilkan yang belum terpilih
+
+3. **Saksikan Pengacakan**
+   - Animasi akan berjalan otomatis ketika narasumber memulai
+   - Hasil langsung tersinkronisasi
+
+## 📊 Format File CSV
+
+### Input CSV:
+```csv
+Ahmad Budi
+Siti Rahma
+Joko Susilo
+Maria Dewi
+```
+
+### Output CSV:
+```csv
+Nama,Status,Tanggal Terpilih
+"Ahmad Budi","Terpilih","12/01/2025 14:30:25"
+"Siti Rahma","Belum Terpilih",""
+"Joko Susilo","Terpilih","12/01/2025 14:32:10"
+"Maria Dewi","Belum Terpilih",""
+```
 
 ## 🔧 Konfigurasi
 
-### Environment Variables
-```env
-PORT=3000                    # Port server (default: 3000)
+### Mengubah Port Server:
+```bash
+PORT=8080 npm start
 ```
 
-### Customisasi CSS
-Edit `style.css` untuk mengubah:
-- Skema warna (CSS variables di `:root`)
-- Durasi animasi
-- Font families
-- Layout breakpoints
+### Kustomisasi Animasi:
+Edit durasi animasi di `server.js`:
+```javascript
+setTimeout(() => {
+    // Ubah 3000 (3 detik) sesuai kebutuhan
+}, 3000);
+```
 
-### Server Configuration
-Edit `server.js` untuk:
-- Mengubah durasi animasi pengacakan
-- Menambah validasi data
-- Memodifikasi format timestamp
+## 🎨 Fitur Tambahan
+
+- **Validasi Input**: Otomatis hapus duplikasi dan nama kosong
+- **Error Handling**: Notifikasi untuk setiap aksi dan kesalahan
+- **Responsive Design**: Optimal di desktop, tablet, dan mobile
+- **Animasi Smooth**: Transisi halus dan efek visual menarik
+- **Data Persistent**: Data tersimpan selama sesi berlangsung
+- **Real-time Sync**: Sinkronisasi langsung antara semua client
+
+## 🚫 Batasan
+
+- Data tidak tersimpan setelah server restart
+- Maksimum file upload tergantung konfigurasi server
+- Membutuhkan koneksi internet untuk WebSocket
+- Nama yang sudah terpilih tidak bisa terpilih lagi dalam sesi yang sama
 
 ## 🐛 Troubleshooting
 
-### Error: "EADDRINUSE: address already in use"
-- Port 3000 sudah digunakan aplikasi lain
-- Ubah PORT di environment variables atau terminate aplikasi lain
+### WebSocket Connection Failed:
+- Pastikan server berjalan di port yang benar
+- Periksa firewall atau proxy yang mungkin memblokir WebSocket
 
-### File CSV tidak terbaca
-- Pastikan encoding file UTF-8
-- Periksa format: satu kolom berisi nama peserta
-- Hapus baris header jika ada
+### File Upload Error:
+- Pastikan format file CSV dengan encoding UTF-8
+- Periksa ukuran file tidak melebihi batas
+- Gunakan ekstensi .csv
 
-### Sinkronisasi tidak berjalan
-- Refresh halaman peserta
-- Periksa koneksi internet
-- Restart server jika perlu
-
-### Animasi tidak smooth
-- Pastikan menggunakan browser modern
-- Disable extension browser yang mengganggu CSS
-- Periksa hardware acceleration di browser
-
-## 📊 Format Data CSV
-
-### Input Format
-```csv
-Nama
-Ahmad Wijaya
-Siti Nurhaliza
-Budi Santoso
-Maria Christina
-```
-
-### Output Format
-```csv
-Nama,Status,Tanggal Terpilih
-Ahmad Wijaya,Terpilih,05/01/2025 14:30
-Siti Nurhaliza,Belum Terpilih,
-Budi Santoso,Terpilih,05/01/2025 14:32
-Maria Christina,Belum Terpilih,
-```
-
-## 🔐 Keamanan
-
-- Input sanitization untuk nama peserta
-- Validasi file upload (hanya CSV)
-- Rate limiting untuk pengacakan
-- No persistent storage (session-only)
-
-## 🚀 Pengembangan Lanjutan
-
-Ide untuk enhancement:
-- Database persistence (MongoDB/PostgreSQL)
-- User authentication untuk multiple sessions
-- Export ke format lain (Excel, PDF)
-- Custom animation themes
-- Mobile app dengan React Native
-- Analytics dan reporting
-- Multiple randomization modes
-- Integration dengan Google Sheets
+### Animasi Tidak Berjalan:
+- Pastikan JavaScript enabled di browser
+- Periksa console browser untuk error
+- Refresh halaman dan coba lagi
 
 ## 📝 Lisensi
 
-Project ini bersifat open source untuk penggunaan personal dan komersial.
-
-## 👨‍💻 Kontributor
-
-Dikembangkan dengan teknologi:
-- **Backend**: Node.js, Express.js, Socket.io
-- **Frontend**: Vanilla JavaScript, CSS3, HTML5
-- **Design**: Matrix-inspired theme dengan modern CSS
+Aplikasi ini dibuat untuk keperluan edukasi dan dapat digunakan secara bebas.
 
 ---
 
-**Selamat menggunakan aplikasi pengacakan giliran peserta!** 🎲✨
+**Selamat menggunakan Aplikasi Pengacakan Giliran Peserta! 🎉**

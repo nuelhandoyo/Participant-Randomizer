@@ -8,48 +8,54 @@
 </head>
 <body class="participant-view">
     <div class="container">
-        <header class="header">
-            <h1>🎯 Pengacakan Peserta</h1>
-            <p class="subtitle">Menunggu Giliran Anda</p>
+        <header>
+            <h1>🎯 Pengacakan Giliran Peserta</h1>
+            <div class="connection-status">
+                <div class="status-indicator" id="connectionStatus">🔴 Tidak terhubung</div>
+            </div>
         </header>
 
-        <div class="main-content">
-            <!-- Main Animation Section -->
-            <div class="animation-section participant-main">
-                <div class="matrix-container">
-                    <div class="matrix-display" id="matrixDisplay">
-                        <div class="matrix-text">Menunggu pengacakan dimulai...</div>
+        <div class="main-animation">
+            <div class="card animation-card">
+                <div class="animation-header">
+                    <h2>🎲 Siapa yang akan terpilih?</h2>
+                    <div class="participant-count">
+                        <span>Total: <strong id="totalCount">0</strong></span>
+                        <span>Tersisa: <strong id="remainingCount">0</strong></span>
                     </div>
-                    <div class="selected-result" id="selectedResult" style="display: none;"></div>
+                </div>
+                
+                <div class="matrix-container large" id="matrixContainer">
+                    <div class="matrix-display">
+                        <div class="matrix-text" id="matrixText">Menunggu pengacakan dimulai...</div>
+                    </div>
+                </div>
+                
+                <div class="animation-status">
+                    <div class="status-message" id="statusMessage">Siap untuk pengacakan</div>
                 </div>
             </div>
         </div>
 
-        <!-- Simple Status Bar -->
-        <div class="participant-status-bar">
-            <div class="status-item">
-                <span class="status-label">Total Peserta:</span>
-                <span class="status-value" id="totalParticipants">0</span>
+        <div class="status-panels">
+            <div class="card status-panel">
+                <h4>✅ Sudah Terpilih (<span id="selectedCount">0</span>)</h4>
+                <div class="participant-list selected-list" id="selectedList">
+                    <div class="empty-state">Belum ada yang terpilih</div>
+                </div>
             </div>
-            <div class="status-item">
-                <span class="status-label">Sudah Terpilih:</span>
-                <span class="status-value" id="selectedCount">0</span>
+            
+            <div class="card status-panel">
+                <h4>⏳ Belum Terpilih (<span id="unselectedCount">0</span>)</h4>
+                <div class="participant-list unselected-list" id="unselectedList">
+                    <div class="empty-state">Menunggu daftar peserta</div>
+                </div>
             </div>
-            <div class="status-item">
-                <span class="status-label">Belum Terpilih:</span>
-                <span class="status-value" id="remainingCount">0</span>
-            </div>
-        </div>
-
-        <!-- Last Selected Display -->
-        <div class="last-selected" id="lastSelected" style="display: none;">
-            <h3>🎉 Peserta Terpilih Terakhir</h3>
-            <div class="last-selected-name" id="lastSelectedName"></div>
-            <div class="last-selected-time" id="lastSelectedTime"></div>
         </div>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="app.js"></script>
+    <div id="notification" class="notification"></div>
+    
+    <script src="participant.js"></script>
 </body>
 </html>

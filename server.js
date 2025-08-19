@@ -1,6 +1,7 @@
 import express from 'express';
+import { WebSocketServer } from 'ws';
 import { createServer } from 'http';
-import { Server } from 'socket.io';
+import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -9,113 +10,184 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server);
+const wss = new WebSocketServer({ server });
+
+// Configure multer for file uploads
+const upload = multer({ dest: 'uploads/' });
 
 // Serve static files
 app.use(express.static(__dirname));
+app.use(express.json());
 
-// Routes
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.get('/participant', (req, res) => {
-  res.sendFile(path.join(__dirname, 'participant.html'));
-});
-
-// Game state
-let gameState = {
+// Application state
+let appState = {
   participants: [],
-  selected: [],
-  isRandomizing: false,
+  selectedParticipants: [],
+  isAnimating: false,
   currentAnimation: null
 };
 
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
-
-  // Send current state to new connection
-  socket.emit('gameState', gameState);
-
-  // Handle participant list update
-  socket.on('updateParticipants', (participants) => {
-    gameState.participants = participants;
-    gameState.selected = [];
-    io.emit('participantsUpdated', gameState);
+// Broadcast to all connected clients
+function broadcast(data) {
+  wss.clients.forEach(client => {
+    if (client.readyState === 1) { // WebSocket.OPEN
+      client.send(JSON.stringify(data));
+    }
   });
+}
 
-  // Handle randomization start
-  socket.on('startRandomization', () => {
-    if (gameState.participants.length === 0) {
-      socket.emit('error', 'No participants available');
-      return;
-    }
+// WebSocket connection handling
+wss.on('connection', (ws) => {
+  console.log('Client connected');
+  
+  // Send current state to new client
+  ws.send(JSON.stringify({
+    type: 'STATE_UPDATE',
+    data: appState
+  }));
 
-    const availableParticipants = gameState.participants.filter(
-      p => !gameState.selected.find(s => s.name === p)
-    );
-
-    if (availableParticipants.length === 0) {
-      socket.emit('error', 'All participants have been selected');
-      return;
-    }
-
-    gameState.isRandomizing = true;
-    io.emit('randomizationStarted');
-
-    // Simulate randomization animation for 3 seconds
-    setTimeout(() => {
-      const selectedName = availableParticipants[
-        Math.floor(Math.random() * availableParticipants.length)
-      ];
+  ws.on('message', (message) => {
+    try {
+      const data = JSON.parse(message);
       
-      const selectedData = {
-        name: selectedName,
-        timestamp: new Date().toISOString(),
-        date: new Date().toLocaleDateString('id-ID', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        })
-      };
-
-      gameState.selected.push(selectedData);
-      gameState.isRandomizing = false;
-      gameState.currentAnimation = selectedName;
-
-      io.emit('participantSelected', {
-        selected: selectedData,
-        gameState: gameState
-      });
-
-      // Clear animation after 2 seconds
-      setTimeout(() => {
-        gameState.currentAnimation = null;
-        io.emit('animationComplete');
-      }, 2000);
-
-    }, 3000);
+      switch (data.type) {
+        case 'UPDATE_PARTICIPANTS':
+          appState.participants = data.participants;
+          broadcast({
+            type: 'STATE_UPDATE',
+            data: appState
+          });
+          break;
+          
+        case 'START_ANIMATION':
+          if (appState.participants.length > 0 && !appState.isAnimating) {
+            appState.isAnimating = true;
+            
+            // Simulate animation duration (3 seconds)
+            setTimeout(() => {
+              const availableParticipants = appState.participants.filter(
+                p => !appState.selectedParticipants.find(s => s.name === p)
+              );
+              
+              if (availableParticipants.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availableParticipants.length);
+                const selectedName = availableParticipants[randomIndex];
+                
+                appState.selectedParticipants.push({
+                  name: selectedName,
+                  timestamp: new Date().toLocaleString('id-ID')
+                });
+              }
+              
+              appState.isAnimating = false;
+              appState.currentAnimation = null;
+              
+              broadcast({
+                type: 'STATE_UPDATE',
+                data: appState
+              });
+            }, 3000);
+            
+            broadcast({
+              type: 'ANIMATION_START',
+              data: appState
+            });
+          }
+          break;
+          
+        case 'RESET_DATA':
+          appState = {
+            participants: [],
+            selectedParticipants: [],
+            isAnimating: false,
+            currentAnimation: null
+          };
+          broadcast({
+            type: 'STATE_UPDATE',
+            data: appState
+          });
+          break;
+      }
+    } catch (error) {
+      console.error('Error processing message:', error);
+    }
   });
 
-  // Handle reset
-  socket.on('reset', () => {
-    gameState = {
-      participants: [],
-      selected: [],
-      isRandomizing: false,
-      currentAnimation: null
-    };
-    io.emit('gameState', gameState);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+  ws.on('close', () => {
+    console.log('Client disconnected');
   });
 });
 
+// CSV upload endpoint
+app.post('/upload-csv', upload.single('csvFile'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  try {
+    // Simple CSV parsing (assuming single column with names)
+    const fs = await import('fs');
+    const csvContent = fs.readFileSync(req.file.path, 'utf8');
+    
+    // Parse CSV properly - handle quotes, commas, and different formats
+    const lines = csvContent
+      .split(/\r?\n/) // Handle different line endings
+      .map(line => {
+        // Remove quotes if present and trim whitespace
+        let cleanLine = line.trim();
+        if (cleanLine.startsWith('"') && cleanLine.endsWith('"')) {
+          cleanLine = cleanLine.slice(1, -1);
+        }
+        // If line contains comma, take only the first part (first column)
+        if (cleanLine.includes(',')) {
+          cleanLine = cleanLine.split(',')[0].trim();
+          // Remove quotes from first column if present
+          if (cleanLine.startsWith('"') && cleanLine.endsWith('"')) {
+            cleanLine = cleanLine.slice(1, -1);
+          }
+        }
+        return cleanLine;
+      })
+      .filter(line => line.length > 0 && line !== 'Nama' && line !== 'Name'); // Filter out empty lines and headers
+    
+    // Clean up uploaded file
+    fs.unlinkSync(req.file.path);
+    
+    res.json({ participants: lines });
+  } catch (error) {
+    console.error('Error processing CSV:', error);
+    res.status(500).json({ error: 'Error processing CSV file' });
+  }
+});
+
+// Export CSV endpoint
+app.get('/export-csv', (req, res) => {
+  const csvContent = generateCSV();
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename="participants-data.csv"');
+  res.send(csvContent);
+});
+
+function generateCSV() {
+  let csv = 'Nama,Status,Tanggal Terpilih\n';
+  
+  // Add selected participants
+  appState.selectedParticipants.forEach(p => {
+    csv += `"${p.name}","Terpilih","${p.timestamp}"\n`;
+  });
+  
+  // Add unselected participants
+  const unselected = appState.participants.filter(
+    name => !appState.selectedParticipants.find(s => s.name === name)
+  );
+  unselected.forEach(name => {
+    csv += `"${name}","Belum Terpilih",""\n`;
+  });
+  
+  return csv;
+}
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
