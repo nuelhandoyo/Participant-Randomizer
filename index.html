@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futuristic Participant Randomizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- View Selector -->
+        <div class="view-selector">
+            <button id="speakerBtn" class="view-btn active">
+                <span class="btn-icon">🎤</span>
+                Speaker View
+            </button>
+            <button id="participantBtn" class="view-btn">
+                <span class="btn-icon">👥</span>
+                Participant View
+            </button>
+        </div>
+
+        <!-- Speaker View -->
+        <div id="speakerView" class="view active">
+            <div class="speaker-container">
+                <div class="control-panel">
+                    <h1 class="panel-title">Mission Control</h1>
+                    
+                    <!-- Data Input Section -->
+                    <div class="input-section">
+                        <div class="input-group">
+                            <h3>Upload Participants</h3>
+                            <div class="file-drop-zone" id="dropZone">
+                                <div class="drop-content">
+                                    <div class="upload-icon">📁</div>
+                                    <p>Drop CSV file here or</p>
+                                    <button class="btn-secondary" onclick="document.getElementById('csvFile').click()">Choose File</button>
+                                    <input type="file" id="csvFile" accept=".csv" hidden>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <h3>Or Paste Names</h3>
+                            <textarea id="namesInput" placeholder="Enter names separated by commas or new lines..."></textarea>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button id="loadNamesBtn" class="btn-primary">Load Participants</button>
+                            <button id="clearAllBtn" class="btn-danger">Clear All</button>
+                        </div>
+                    </div>
+
+                    <!-- Control Section -->
+                    <div class="control-section">
+                        <div class="randomizer-controls">
+                            <button id="startRandomBtn" class="btn-start" disabled>
+                                <span class="btn-glow"></span>
+                                Start Selection
+                            </button>
+                            <button id="stopRandomBtn" class="btn-stop" disabled>Stop</button>
+                            <button id="downloadBtn" class="btn-secondary">Download CSV</button>
+                        </div>
+                        
+                        <div class="stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Total:</span>
+                                <span id="totalCount">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Selected:</span>
+                                <span id="selectedCount">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Remaining:</span>
+                                <span id="remainingCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hologram Display -->
+                <div class="hologram-container">
+                    <div class="hologram-display">
+                        <div class="particle-field"></div>
+                        <div class="selection-wheel">
+                            <div class="wheel-center">
+                                <div class="selected-name" id="selectedNameSpeaker">Ready to Begin</div>
+                            </div>
+                            <div class="wheel-ring"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Participant View -->
+        <div id="participantView" class="view">
+            <div class="participant-container">
+                <!-- Header -->
+                <div class="participant-header">
+                    <h1>Participant Selection Portal</h1>
+                    <div class="connection-status">
+                        <div class="status-indicator active"></div>
+                        <span>Connected to Mission Control</span>
+                    </div>
+                </div>
+
+                <div class="participant-content">
+                    <!-- Central Hologram -->
+                    <div class="central-hologram">
+                        <div class="hologram-display participant-hologram">
+                            <div class="particle-field"></div>
+                            <div class="selection-wheel">
+                                <div class="wheel-center">
+                                    <div class="selected-name" id="selectedNameParticipant">Awaiting Selection</div>
+                                </div>
+                                <div class="wheel-ring"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Side Panels -->
+                    <div class="side-panels">
+                        <div class="panel not-selected-panel">
+                            <h3>Awaiting Selection</h3>
+                            <div id="notSelectedList" class="participant-list"></div>
+                        </div>
+
+                        <div class="panel selected-panel">
+                            <h3>Selected Participants</h3>
+                            <div id="selectedList" class="participant-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="sync.js"></script>
+    <script src="animations.js"></script>
+    <script src="main.js"></script>
