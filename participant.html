@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengacakan Giliran - Tampilan Peserta</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="participant-view">
+    <div class="container">
+        <header class="header">
+            <h1>🎯 Pengacakan Peserta</h1>
+            <p class="subtitle">Menunggu Giliran Anda</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Main Animation Section -->
+            <div class="animation-section participant-main">
+                <div class="matrix-container">
+                    <div class="matrix-display" id="matrixDisplay">
+                        <div class="matrix-text">Menunggu pengacakan dimulai...</div>
+                    </div>
+                    <div class="selected-result" id="selectedResult" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simple Status Bar -->
+        <div class="participant-status-bar">
+            <div class="status-item">
+                <span class="status-label">Total Peserta:</span>
+                <span class="status-value" id="totalParticipants">0</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Sudah Terpilih:</span>
+                <span class="status-value" id="selectedCount">0</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Belum Terpilih:</span>
+                <span class="status-value" id="remainingCount">0</span>
+            </div>
+        </div>
+
+        <!-- Last Selected Display -->
+        <div class="last-selected" id="lastSelected" style="display: none;">
+            <h3>🎉 Peserta Terpilih Terakhir</h3>
+            <div class="last-selected-name" id="lastSelectedName"></div>
+            <div class="last-selected-time" id="lastSelectedTime"></div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

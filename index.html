@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengacakan Giliran - Narasumber</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-view">
+    <div class="container">
+        <header class="header">
+            <h1>🎲 Panel Kontrol Narasumber</h1>
+            <p class="subtitle">Kelola Pengacakan Peserta</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="input-group">
+                    <h3>📄 Upload File CSV</h3>
+                    <input type="file" id="csvFile" accept=".csv" class="file-input">
+                    <p class="help-text">Format: satu kolom berisi nama peserta (tanpa header)</p>
+                </div>
+
+                <div class="input-group">
+                    <h3>✏️ Input Manual</h3>
+                    <textarea 
+                        id="participantTextarea" 
+                        placeholder="Masukkan nama peserta (satu nama per baris)&#10;Contoh:&#10;Ahmad Wijaya&#10;Siti Nurhaliza&#10;Budi Santoso"
+                        rows="8"
+                    ></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button id="loadParticipants" class="btn btn-primary">
+                        📋 Load Peserta
+                    </button>
+                    <button id="startRandomization" class="btn btn-success" disabled>
+                        🎯 Mulai Acak
+                    </button>
+                    <button id="downloadData" class="btn btn-secondary" disabled>
+                        💾 Download CSV
+                    </button>
+                    <button id="resetData" class="btn btn-danger">
+                        🔄 Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Preview Animation Section -->
+            <div class="animation-section admin-preview">
+                <div class="matrix-container">
+                    <h3 class="preview-title">Preview Pengacakan</h3>
+                    <div class="matrix-display" id="matrixDisplay">
+                        <div class="matrix-text">Preview animasi pengacakan</div>
+                    </div>
+                    <div class="selected-result" id="selectedResult" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Section -->
+        <div class="status-section">
+            <div class="status-card">
+                <h3>📊 Status Peserta</h3>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <span class="label">Total Peserta:</span>
+                        <span class="value" id="totalParticipants">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Sudah Terpilih:</span>
+                        <span class="value" id="selectedCount">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Belum Terpilih:</span>
+                        <span class="value" id="remainingCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="participants-lists">
+                <div class="participants-column">
+                    <h4>✅ Sudah Terpilih</h4>
+                    <div class="participants-list selected-list" id="selectedList"></div>
+                </div>
+                <div class="participants-column">
+                    <h4>⏳ Belum Terpilih</h4>
+                    <div class="participants-list remaining-list" id="remainingList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Viewer Link -->
+        <div class="viewer-link">
+            <p>🔗 <strong>Tampilan Peserta:</strong> <a href="/participant" target="_blank" class="participant-link">Buka di Tab Baru</a></p>
+            <p class="help-text">Bagikan link ini kepada peserta untuk melihat pengacakan secara real-time</p>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal" id="errorModal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeErrorModal()">&times;</span>
+            <h3>⚠️ Error</h3>
+            <p id="errorMessage"></p>
+            <button onclick="closeErrorModal()" class="btn btn-primary">OK</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
